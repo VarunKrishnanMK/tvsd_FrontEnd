@@ -2,7 +2,7 @@ import { Modal } from 'antd';
 import React, { useContext, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import Table from '../../components/Table';
-import { getInvoices } from '../../apiService/ApiService';
+import { createInvoice, getInvoices } from '../../apiService/ApiService';
 import { userContext } from '../../contexts/UserContext';
 
 export default function Payment() {
@@ -12,8 +12,20 @@ export default function Payment() {
     const [modalTitle, setModalTitle] = useState("");
     const [invoiceList, setInvoiceList] = useState([]);
 
-    const onSubmitForm = (data) => {
-        console.log(data);
+    const onSubmitForm = async (data) => {
+        setLoader(true);
+        await createInvoice(data)
+            .then((res) => {
+                fetchInvoices();
+                reset();
+                setOpenModal(false);
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+            .finally(() => {
+                setLoader(false);
+            })
     }
 
     const fetchInvoices = (page, pageSize) => {
@@ -108,9 +120,11 @@ export default function Payment() {
                     </div>
                 </form>
             </Modal>
-            <div className='card border-0 shadow p-2'>
-                <Table dataSource={invoiceList} onEdit={handleOnEdit} onDelete={handleOnDelete} handlePageChange={fetchInvoices} />
-            </div>
+            {invoiceList.length > 0 &&
+                <div className='card border-0 shadow p-2'>
+                    <Table dataSource={invoiceList} onEdit={handleOnEdit} onDelete={handleOnDelete} handlePageChange={fetchInvoices} />
+                </div>
+            }
         </div>
     )
 }

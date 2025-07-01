@@ -6,9 +6,8 @@ import { verifyLogin } from '../../apiService/ApiService';
 
 export default function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const { setLoader } = useContext(userContext);
+    const { setLoader, login } = useContext(userContext);
     const [showPassword, setShowPassword] = useState(false);
-    const { login } = useContext(userContext);
     const navigate = useNavigate();
 
     const submitLogin = (data) => {
@@ -16,8 +15,9 @@ export default function Login() {
         verifyLogin(data)
             .then((response) => {
                 if (response.data && response.data.token) {
-                    login(response.data.user);
+                    login(response.data.user.userName);
                     localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('userDetails', response.data.user.userName)
                     navigate('/dashboard');
                 } else {
                     alert('Login failed. Please try again.');

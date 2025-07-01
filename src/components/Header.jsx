@@ -30,12 +30,9 @@ export default function Header() {
                         <li className="nav-item me-5">
                             <Link className={path.pathname === "/payment" ? 'nav-link border-0 border-bottom border-dark' : 'nav-link'} to="/payment">Payment</Link>
                         </li>
-                        <li className="nav-item me-5">
-                            <Link className={path.pathname === "/transaction" ? 'nav-link border-0 border-bottom border-dark' : 'nav-link'} to="/transaction">Transaction</Link>
-                        </li>
                         <li className="nav-item">
                             <Dropdown menu={{ items }} placement="bottomRight">
-                                <button className='btn fw-bold border-0 border-bottom border-dark'><i className="bi bi-person-circle me-3"></i>{userDetails.userName}</button>
+                                <button className='btn fw-bold border-0 border-bottom border-dark'><i className="bi bi-person-circle me-3"></i>{userDetails}</button>
                             </Dropdown>
                         </li>
                     </ul>

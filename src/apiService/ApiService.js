@@ -1,5 +1,6 @@
 import axios from "axios";
 import { toast } from 'react-hot-toast';
+import { Navigate } from "react-router";
 
 const baseAPIUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -23,34 +24,30 @@ apiClient.interceptors.request.use((config) => {
     return Promise.reject(error);
 });
 
-export function setupAxiosInterceptors(navigateFunction) {
-    apiClient.interceptors.response.use((response) => response, (err) => {
+apiClient.interceptors.response.use((response) => response, (err) => {
 
-        const backendMsg = err.response?.data?.error;
-        const isTokenExpired = backendMsg === 'Token expired';
+    const backendMsg = err.response?.data?.error;
+    const isTokenExpired = backendMsg === 'Token expired';
 
-        const uiMsg = isTokenExpired
-            ? 'Your session has expired. Please sign-in again to continue.'
-            : backendMsg || 'Something went wrong.';
+    const uiMsg = isTokenExpired ? 'Your session has expired. Please sign-in again to continue.' : backendMsg || 'Something went wrong.';
 
-        toast.error(uiMsg, {
-            style: {
-                borderRadius: '15px',
-                background: 'gray',
-                color: '#fff',
-            },
-            iconTheme: {
-                primary: 'red',
-                secondary: '#FFFAEE',
-            },
-        });
-
-        if (isTokenExpired) {
-            setTimeout(() => navigateFunction('/login', { replace: true }), 1000);
-        }
-        return Promise.reject(err);
+    toast.error(uiMsg, {
+        style: {
+            borderRadius: '15px',
+            background: 'gray',
+            color: '#fff',
+        },
+        iconTheme: {
+            primary: 'red',
+            secondary: '#FFFAEE',
+        },
     });
-}
+
+    if (isTokenExpired) {
+        setTimeout(() => window.location.replace('/login'), 2000);
+    }
+    return Promise.reject(err);
+});
 
 
 // User Account
@@ -61,6 +58,11 @@ export const verifyLogin = async (data) => {
 
 export const getUserDetails = async () => {
     let responseData = await apiClient.post(`${baseAPIUrl}/getUser`);
+    return responseData;
+}
+
+export const getDashBoradDetails = async () => {
+    let responseData = await apiClient.post(`${baseAPIUrl}/getUserDashboard`);
     return responseData;
 }
 

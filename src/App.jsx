@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router'
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router'
 import Login from './app/auth/Login'
 import Mainlayout from './Manilayout'
 import Dashboard from './app/dashboard/Dashboard'
@@ -23,7 +23,6 @@ function App() {
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/account' element={<Accounts />} />
           <Route path='/payment' element={<Payment />} />
-          <Route path='/transaction' element={<Payment />} />
         </Route>
 
         <Route path='*' element={<NotFound />} />

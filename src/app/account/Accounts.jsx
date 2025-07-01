@@ -39,6 +39,8 @@ export default function Accounts() {
         await getBankAccounts(payload)
             .then((res) => {
                 let data = res.data.bankAccounts;
+                console.log(data);
+
                 setBankAccounts(data);
             })
             .catch((error) => {
@@ -93,17 +95,19 @@ export default function Accounts() {
         }
     }
 
-    const onSubmitForm = (data) => {
+    const onSubmitForm = async (data) => {
         setLoader(true);
         let payload = {};
         try {
             if (bankType !== "bank") {
                 let { balance, ...restData } = data;
                 payload = restData;
-                createBeneficiaryAccounts(payload)
+                await createBeneficiaryAccounts(payload)
+                fetchBeneficiaryAccounts();
             }
             else {
-                createBankAccounts(data)
+                await createBankAccounts(data)
+                fetchBankAccounts();
             }
         } catch (err) {
             console.log(err);
@@ -112,8 +116,6 @@ export default function Accounts() {
             setLoader(false);
             reset();
             setModelVisible(false);
-            fetchBankAccounts();
-            fetchBeneficiaryAccounts();
         }
     }
 
@@ -168,20 +170,26 @@ export default function Accounts() {
                             </li>
                         </ul>
                         <div className="tab-content" id="pills-tabContent">
-                            <div className="tab-pane fade show active" id="pills-bankAccounts" role="tabpanel" aria-labelledby="pills-bankAccounts-tab" tabindex="0">
+                            <div className="tab-pane fade show active" id="pills-bankAccounts" role="tabpanel" aria-labelledby="pills-bankAccounts-tab" tabIndex="0">
                                 <div className='text-end mb-3'>
                                     <button className='btn btn-primary' onClick={() => handleModalClick("bank")}><i className="bi bi-plus-circle me-2"></i>Add Bank Account</button>
                                 </div>
                                 <div className='container-fluid'>
-                                    <Table dataSource={bankAccounts} onEdit={handleOnEdit} onDelete={handleOnDelete} handlePageChange={fetchBankAccounts} />
+                                    {
+                                        bankAccounts.length > 0 &&
+                                        <Table dataSource={bankAccounts} onEdit={handleOnEdit} onDelete={handleOnDelete} handlePageChange={fetchBankAccounts} viewEdit={true} viewDelete={true} />
+                                    }
                                 </div>
                             </div>
-                            <div className="tab-pane fade" id="pills-beneficiaryAccounts" role="tabpanel" aria-labelledby="pills-beneficiaryAccounts-tab" tabindex="0">
+                            <div className="tab-pane fade" id="pills-beneficiaryAccounts" role="tabpanel" aria-labelledby="pills-beneficiaryAccounts-tab" tabIndex="0">
                                 <div className='text-end mb-3'>
                                     <button className='btn btn-primary' onClick={() => handleModalClick("beneficiary")}><i className="bi bi-plus-circle me-2"></i>Add Beneficiary Account</button>
                                 </div>
                                 <div className='container-fluid'>
-                                    <Table dataSource={beneficiaryAccounts} onEdit={handleOnEdit} onDelete={handleOnDelete} handlePageChange={fetchBeneficiaryAccounts} />
+                                    {
+                                        beneficiaryAccounts.length > 0 &&
+                                        <Table dataSource={beneficiaryAccounts} onEdit={handleOnEdit} onDelete={handleOnDelete} handlePageChange={fetchBeneficiaryAccounts} viewEdit={true} viewDelete={true} />
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -250,7 +258,7 @@ export default function Accounts() {
                             </div>
                         </div>
                         <div className='text-end'>
-                            <button type="button" className='btn btn-warning me-3' onClick={() => setModelVisible(false)}>Cancel</button>
+                            <button type="button" className='btn btn-warning me-3' onClick={() => { setModelVisible(false), reset() }}>Cancel</button>
                             <button type="submit" className='btn btn-success'>Submit</button>
                         </div>
                     </form>
